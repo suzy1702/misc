@@ -460,6 +460,106 @@ def makeFCCdiamond(nx,ny,nz,lammps='no',element='si'):
 
     return [num, pos, masses, uc, a]     
 
+def makeTriclinic(n1,n2,n3,lammps='no',element='si'):
+    import numpy as np
+    import sys
+    import copy as cp
+    
+    if element == 'si':
+        a = 5.431 #Si lattice constant
+        masses = np.array([28.0855,28.0855]) #atomic mass of Si
+    if element == 'ge':
+        a = 5.658 #Ge lattice constant
+        masses = np.array([72.6400,72.6400]) #atomic mass of Ge
+    if element == 'c':
+        a = 3.57 #C lattice constant
+        masses = np.array([12.0107,12.0107]) #atomic mass of C
+    if (n1%2.0 != 0) and (n2%2.0 != 0) and (n3%2.0 != 0):
+        sys.exit('Number of unit cells in each direction must be an even'
+                 ' integer')
+        
+    nT = np.array([n1,n2,n3]).astype(int) #times to translate in each direction
+    unit = np.array(([1,0,0,0], #FCC-diamond unit cell (basis-index,x,y,z,uc)
+                     [2,1,1,1])).astype(float)
+    
+    uc = np.array([0,0])
+    
+    tmp = cp.deepcopy(unit)
+    pos = cp.deepcopy(unit) #basis-index and coordinates of atoms
+    tuc = cp.deepcopy(uc)
+    for i in range(nT[0]-1): #translate in a1-direction 
+        tmp[:,1] = tmp[:,1]+2
+        pos = np.append(pos,tmp,axis=0)
+        tuc = tuc+1
+        uc = np.append(uc,tuc)
+    tmp = cp.deepcopy(pos)
+    tuc = cp.deepcopy(uc)
+    for i in range(nT[1]-1): #translate in a2-direction
+        tmp[:,1] = tmp[:,1]+1
+        tmp[:,2] = tmp[:,2]+3
+        pos = np.append(pos,tmp,axis=0)
+        tuc2 = tuc+max(uc)+1
+        uc = np.append(uc,tuc2)
+    tmp = cp.deepcopy(pos)
+    tuc = cp.deepcopy(uc)
+    for i in range(nT[2]-1): #translate in a3-direction
+        tmp[:,1] = tmp[:,1]+1
+        tmp[:,2] = tmp[:,2]+1
+        tmp[:,3] = tmp[:,3]+4
+        pos = np.append(pos,tmp,axis=0)
+        tuc2 = tuc+max(uc)+1
+        uc = np.append(uc,tuc2)
+    
+    num = len(pos[:,0])
+    ids = np.zeros((num,1))
+    ids[:,0] = np.arange(0,num,1)+1 #will be used later    
+    pos = np.append(ids,pos,axis=1)
+    pos[:,2] = pos[:,2]*a*np.sqrt(2.0)/4.0 #rescale coordinates
+    pos[:,3] = pos[:,3]*a/np.sqrt(24.0) #rescale coordinates
+    pos[:,4] = pos[:,4]*a/np.sqrt(3.0)/4.0 #rescale coordinates
+    
+    if lammps != 'no':
+        with open(lammps, 'w') as fid:
+            xbuff = (pos[np.argwhere(pos[:,3] == 0)[:,0],2][1]-
+                     pos[np.argwhere(pos[:,3] == 0)[:,0],2][0])/2.0
+            xmax = pos[np.argwhere(pos[:,3] == 0)[:,0],2].max()+xbuff
+            xmin = 0-xbuff #by construction
+            ybuff = (np.unique(pos[np.argwhere(pos[:,4] == 0)[:,0],3])[1]-
+                     np.unique(pos[np.argwhere(pos[:,4] == 0)[:,0],3])[0])/2.0
+            ymax = pos[np.argwhere(pos[:,4] == 0)[:,0],3].max()+ybuff
+            ymin = 0-ybuff #by construction
+            zbuff = (np.unique(pos[:,4])[2]-np.unique(pos[:,4])[1])/2.0
+            zmax = pos[:,4].max()+zbuff
+            zmin = 0-zbuff #by construction
+            
+            xy = pos[np.argwhere(pos[:,4] == pos[:,4].max())[:,0],:]
+            xy = xy[np.argwhere(xy[:,3] == xy[:,3].min())[:,0],2].min()
+            xz = xy
+            yz = pos[np.argwhere(pos[:,4] == pos[:,4].max())[:,0],3].min()
+    
+            fid.write(str('LAMMPS DATA FILE\n'))
+        
+            fid.write('\n' + str(len(pos)) + ' atoms\n')
+            fid.write('\n' + str(len(masses)) + ' atom types\n')
+            fid.write('\n' + str(xmin)+' '+str(xmax)+' xlo'+' xhi\n')
+            fid.write(str(ymin)+' '+str(ymax)+' ylo'+' yhi\n')
+            fid.write(str(zmin)+' '+str(zmax)+' zlo'+' zhi\n')
+            fid.write(str(xy)+' '+str(xz)+' '+
+                          str(yz)+' xy xz yz\n')
+            fid.write('\nMasses\n')
+            for i in range(len(masses)):
+                fid.write('\n' + str(i+1) + ' ' + str(float(masses[i])))
+            fid.write('\n\nAtoms\n\n')
+            for i in range(len(pos)-1):
+                fid.write(str(int(i+1)) + ' ' + str(int(pos[i,1])) + ' ' 
+                          + str(pos[i,2]) + ' ' +
+                        str(pos[i,3]) + ' ' + str(pos[i,4]) + '\n')
+            fid.write(str(len(pos)) +  ' ' + str(int(pos[-1,1])) + ' ' 
+                      + str(pos[-1,2]) + ' ' +
+                    str(pos[-1,3]) + ' ' + str(pos[-1,4]))
+            
+    return [num, pos, masses, uc, a]   
+
 def writeSED(outfile,thz,kpoints,sed):
     """
     This function is simple. It writes the frequency data array, k points, 
