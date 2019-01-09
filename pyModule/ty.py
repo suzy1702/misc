@@ -3,8 +3,10 @@
 """
 This file is Ty's custom module to import functions into scritps
 
-DATE STAMP: 01.06.2019 MM.DD.YYYY
+DATE STAMP: 01.08.2019 MM.DD.YYYY
 """
+
+############################################################
 def gsmooth(Raw, win, dom):
     """
     This function takes an numpy array defined over some domain and returns
@@ -31,6 +33,8 @@ def gsmooth(Raw, win, dom):
 
     smooth = np.convolve(Raw,gauss,mode='same')
     return smooth
+
+
 
 def smoothSED(Raw, win, dom):
     """
@@ -63,6 +67,8 @@ def smoothSED(Raw, win, dom):
         smooth[:,i] = np.convolve(Raw[:,i],gauss,mode='same')
     return smooth
 
+
+############################################################
 def findNN(pos,index=0):
     """
     This function takes a position array with 5 columns = [id, type, x, y, z]
@@ -119,6 +125,7 @@ def findNN(pos,index=0):
     return [nl,dl,nn]
 
 
+############################################################
 def readData(filename):
     """
     This function reads a lammps data file and returns:1: the number of atoms,
@@ -155,6 +162,7 @@ def readData(filename):
     return [num, types, masses, pos]
 
 
+############################################################
 def readFij(filename,num,pos,basis,nl,nn,neighbor=2,tol=0):
     """
     This function reads a file, 'forcefile', of lammps force data calculated
@@ -274,6 +282,8 @@ def readFij(filename,num,pos,basis,nl,nn,neighbor=2,tol=0):
     
     return phi, rvec
 
+
+############################################################
 def makeKpoints(prim,specialk,dk):
     """
     This function takes primitive lattice, prim, vectors and constructs
@@ -317,6 +327,7 @@ def makeKpoints(prim,specialk,dk):
     return [kpoints, kdist]
 
 
+############################################################
 def dynamicalMat(phi,rvec,pos,basis,masses,kpoints,nl):
     """
     This function computes the phonon dynamical matrix by space fourier
@@ -359,6 +370,8 @@ def dynamicalMat(phi,rvec,pos,basis,masses,kpoints,nl):
         
     return om #thz
 
+
+############################################################
 def makeFCCdiamond(nx,ny,nz,lammps='no',element='si'):
     """
     This function takes arguments x,y,z: the length of the structure (in 
@@ -460,6 +473,8 @@ def makeFCCdiamond(nx,ny,nz,lammps='no',element='si'):
 
     return [num, pos, masses, uc, a]     
 
+
+
 def makeTriclinic(n1,n2,n3,lammps='no',element='si'):
     import numpy as np
     import sys
@@ -558,50 +573,10 @@ def makeTriclinic(n1,n2,n3,lammps='no',element='si'):
                       + str(pos[-1,2]) + ' ' +
                     str(pos[-1,3]) + ' ' + str(pos[-1,4]))
             
-    return [num, pos, masses, uc, a]   
+    return [num, pos, masses, uc, a] 
 
-def writeSED(outfile,thz,kpoints,sed):
-    """
-    This function is simple. It writes the frequency data array, k points, 
-    and SED matrix to a file named outfile.
-    """
-    import numpy as np
-    nf = len(thz)
-    nk = len(kpoints[:,0])
-    sed = np.reshape(sed,(nf*nk,1))
 
-    with open(outfile, 'w') as fid:
-        fid.write('nf = '+str(nf)+'\n')
-        fid.write('nk = '+str(nk)+'\n')
-        for i in range(nf):
-            fid.write(str(thz[i])+'\n')
-        for i in range(nk):
-            fid.write(str(kpoints[i,0])+'\t'+str(kpoints[i,1])+'\t'+
-                      str(kpoints[i,2])+'\n')
-        for i in range(nk*nf):
-            fid.write(str(sed[i,0])+'\n')
-            
-def readSED(infile):
-    """
-    This function reads in the SED outout file and returns SED, kpoints, THz
-    """
-    with open(infile,'r') as fid:
-        import numpy as np
-        nf = int(fid.readline().strip().split()[2])
-        nk = int(fid.readline().strip().split()[2])
-        thz = np.zeros((nf,1))
-        kpoints = np.zeros((nk,3))
-        sed = np.zeros((nf*nk,1)).astype(complex)
-        for i in range(nf):
-            thz[i,0] = float(fid.readline())
-        for i in range(nk):
-            kpoints[i,:] = fid.readline().strip().split()[:]
-        kpoints = kpoints.astype(float)
-        for i in range(nf*nk):
-            sed[i,0] = complex(fid.readline())
-        sed = np.reshape(sed,(nf,nk))
-    return thz, kpoints, sed
-            
+
 def makeGaN(nx,ny,nz,lammps='no'):
     """ 
     Same as make FCC, returns all the same stuff.
@@ -678,11 +653,65 @@ def makeGaN(nx,ny,nz,lammps='no'):
                       +str(pos[-1,2])+' '+str(pos[-1,3])+' '+str(pos[-1,4]))
     return [num, pos, masses, uc, a, c] 
 
+
+##########################################################
+def writeSED(outfile,thz,kpoints,sed,dos):
+    """
+    This function is simple. It writes the frequency data array, k points, 
+    and SED matrix to a file named outfile.
+    """
+    import numpy as np
+    nf = len(thz)
+    nk = len(kpoints[:,0])
+    sed = np.reshape(sed,(nf*nk,1))
+
+    with open(outfile, 'w') as fid:
+        fid.write('nf = '+str(nf)+'\n')
+        fid.write('nk = '+str(nk)+'\n')
+        for i in range(nf):
+            fid.write(str(thz[i])+'\n')
+        for i in range(nk):
+            fid.write(str(kpoints[i,0])+'\t'+str(kpoints[i,1])+'\t'+
+                      str(kpoints[i,2])+'\n')
+        for i in range(nk*nf):
+            fid.write(str(sed[i,0])+'\n')
+        for i in range(nf):
+            fid.write(str(dos[i,0])+'\n')
+         
+def readSED(infile):
+    """
+    This function reads in the SED outout file and returns SED, kpoints, THz
+    """
+    with open(infile,'r') as fid:
+        import numpy as np
+        nf = int(fid.readline().strip().split()[2])
+        nk = int(fid.readline().strip().split()[2])
+        thz = np.zeros((nf,1))
+        kpoints = np.zeros((nk,3))
+        sed = np.zeros((nf*nk,1)).astype(complex)
+        dos = np.zeros((nf,1))
+        for i in range(nf):
+            thz[i,0] = float(fid.readline())
+        for i in range(nk):
+            kpoints[i,:] = fid.readline().strip().split()[:]
+        kpoints = kpoints.astype(float)
+        for i in range(nf*nk):
+            sed[i,0] = complex(fid.readline())
+        sed = np.reshape(sed,(nf,nk))
+        for i in range(nf):
+            dos[i,0] = float(fid.readline())
+    return thz, kpoints, sed, dos
+
+
+##########################################################            
 def tic():
     #Homemade version of matlab tic and toc functions ##FOUND ONLINE
     import time
     global startTime_for_tictoc
     startTime_for_tictoc = time.time()
+    
+    
+
 def toc():
     import numpy as np
     import time
@@ -692,14 +721,40 @@ def toc():
                            startTime_for_tictoc,decimals=3))+" seconds.")
     else:
         log("\n\t\tToc: start time not set") 
+        
+        
+##########################################################     
+def vdos(vels,tn,num,dt,dn,win,thz):
+    """
+    This function calculates vibrational density of states from EMD velocity
+    data. Intended to be used adjunct to SED code. 
+    """
+    import numpy as np
+    vels = vels.reshape(tn,num*3)
+    dos = np.zeros((tn,num*3))
+    velsfft = np.fft.fft(vels,axis=0)*dt*dn
+    dos = (np.multiply(abs(velsfft),abs(velsfft))/
+               np.tile(np.multiply(vels,vels).mean(axis=0),(tn,1))/(tn*dt*dn))
+    dosx = gsmooth(dos[:,0::3].mean(axis=1),win,(thz[1]-thz[0])*2*np.pi*1e12)
+    dosy = gsmooth(dos[:,1::3].mean(axis=1),win,(thz[1]-thz[0])*2*np.pi*1e12)
+    dosz = gsmooth(dos[:,2::3].mean(axis=1),win,(thz[1]-thz[0])*2*np.pi*1e12)
+    dos = gsmooth(dos.mean(axis=1),win,(thz[1]-thz[0])*2*np.pi*1e12)
 
-def log(string,outfile='log.txt',supress='no'):
+    return [dos, dosx, dosy, dosz]
+
+
+##########################################################
+def log(string,outfile='log.txt',supress='no',new='no'):
     """
     This function prints output to a file called log.txt and to the screen. 
     If you don't want to print to screen, enter supress='yes'
     """
-    with open(outfile,'a') as fid:
-        fid.write(string)
+    if new == 'no':
+        with open(outfile,'a') as fid:
+            fid.write(string)
+    else:
+        with open(outfile,'w') as fid:
+            fid.write(string)
     if supress == 'no':
         print(string)
     

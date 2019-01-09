@@ -10,6 +10,9 @@ ty.sterling@colorado.edu
 LICENSE AGREEMENT: Do whatever you want :)
 
 i wrote all this in using python 2.7 installed with conda.
+
+* * * * * *
+NEED TO UPDATE THIS TO MATCH CODE FOR FCC SOLIDS
 """
 
 ### GLOBAL VARIABLES ###
