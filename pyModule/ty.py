@@ -286,7 +286,7 @@ def readFij(filename,num,pos,basis,nl,nn,neighbor=2,tol=0):
 ############################################################
 def makeKpoints(prim,specialk,dk):
     """
-    This function takes primitive lattice, prim, vectors and constructs
+    This function takes primitive lattice vectors, prim, and constructs
     reciprocal lattice vectors from them. It also takes an arbitrarily long
     (n,3) array of normalized special k points and an integer, dk.
     Reciprocal lattice vectors are constructed from the primitive lattice 
@@ -476,6 +476,9 @@ def makeFCCdiamond(nx,ny,nz,lammps='no',element='si'):
 
 
 def makeTriclinic(n1,n2,n3,lammps='no',element='si'):
+    """
+    See docstring for makeFCCdiamond
+    """
     import numpy as np
     import sys
     import copy as cp
@@ -579,7 +582,7 @@ def makeTriclinic(n1,n2,n3,lammps='no',element='si'):
 
 def makeGaN(nx,ny,nz,lammps='no'):
     """ 
-    Same as make FCC, returns all the same stuff.
+    See docstring for makeFCCdiamond
     """
     import numpy as np
     import copy as cp
@@ -658,7 +661,7 @@ def makeGaN(nx,ny,nz,lammps='no'):
 def writeSED(outfile,thz,kpoints,sed,dos):
     """
     This function is simple. It writes the frequency data array, k points, 
-    and SED matrix to a file named outfile.
+    SED matrix, and DOS array to file 'outfile'. Read file with readSED
     """
     import numpy as np
     nf = len(thz)
@@ -680,7 +683,8 @@ def writeSED(outfile,thz,kpoints,sed,dos):
          
 def readSED(infile):
     """
-    This function reads in the SED outout file and returns SED, kpoints, THz
+    This function reads in the SED outout file and returns THz, kpoints, SED, 
+    and DOS written to file using writeSED
     """
     with open(infile,'r') as fid:
         import numpy as np
@@ -705,22 +709,36 @@ def readSED(infile):
 
 ##########################################################            
 def tic():
-    #Homemade version of matlab tic and toc functions ##FOUND ONLINE
+    """
+    Same as MATLAB tic and toc functions. Use ty.tic() at the beginning of
+    code you want to time and ty.toc() at the end. Once ty.toc() is reached,
+    elapsted time will be printed to screen and optionally (by default) written
+    to 'log.txt' file.
+    """
     import time
     global startTime_for_tictoc
     startTime_for_tictoc = time.time()
-    
-    
 
-def toc():
+def toc(logFlag='yes'):
+    """
+    Same as MATLAB tic and toc functions. Use ty.tic() at the beginning of
+    code you want to time and ty.toc() at the end. Once ty.toc() is reached,
+    elapsted time will be printed to screen and optionally (by default) written
+    to 'log.txt' file.
+    """
     import numpy as np
     import time
     if 'startTime_for_tictoc' in globals():
-        log("\n\tElapsed time is "+ 
-              str(np.round(time.time()-
+        if logFlag == 'yes':
+            log("\n\tElapsed time is "+str(np.round(time.time()-
                            startTime_for_tictoc,decimals=3))+" seconds.")
+        else:
+            print("\n\tElapsed time is "+
+                  str(np.round(time.time()-
+                           startTime_for_tictoc,decimals=3))+" seconds.")
+
     else:
-        log("\n\t\tToc: start time not set") 
+        print("\n\t\tToc: start time not set") 
         
         
 ##########################################################     
@@ -744,9 +762,10 @@ def vdos(vels,tn,num,dt,dn,win,thz):
 
 
 ##########################################################
-def log(string,outfile='log.txt',supress='no',new='no'):
+def log(string,outfile='log.txt',suppress='no',new='no'):
     """
     This function prints output to a file called log.txt and to the screen. 
+    Useful for tracking whats happening when submitted using qsub or slurm etc.
     If you don't want to print to screen, enter supress='yes'
     """
     if new == 'no':
@@ -755,7 +774,7 @@ def log(string,outfile='log.txt',supress='no',new='no'):
     else:
         with open(outfile,'w') as fid:
             fid.write(string)
-    if supress == 'no':
+    if suppress == 'no':
         print(string)
     
         

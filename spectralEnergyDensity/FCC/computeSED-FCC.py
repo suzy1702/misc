@@ -23,13 +23,13 @@ outfile = 'sed.ty.C'
 velsfile = 'vels.dat'
 
 n1, n2, n3 = [16,16,16] #size of simulation cell
-dk = 50 #k space mesh, number of points between speciak k points
+dk = 20 #k space mesh, number of points between speciak k points
 
-steps = 1000000 #run time
+steps = 10000 #run time
 dt = 0.3e-15 #lammps time step
 dn = 25 #print frequency
 prints = steps/dn #times data is printed
-split = 1 #times to split data for averaging
+split = 2 #times to split data for averaging
 tn = prints/split #timesteps per chunk
 win = 1 #gaussian smoothing window
 pi = np.pi #tired of forgetting the 'np' part...
@@ -81,10 +81,10 @@ with open(velsfile, 'r') as fid:
     
     #the data is read in in chunks and the chunks are mathed upon until
     #its a smaller data structure. then the chunks are all block averaged
-    #together. Saves RAM space \and it also 'ensemble averages' to 
+    #together. Saves RAM space and it also 'ensemble averages' to 
     #produce better data      
           
-    for i in range(1):#split): #loop over chunks to block average
+    for i in range(split): #loop over chunks to block average
         ty.log('\n\tNow on chunk: '+str(i+1)+
               ' out of '+str(split)+'\n')
         vels = np.zeros((tn,num,3))
