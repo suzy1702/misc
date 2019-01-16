@@ -10,7 +10,7 @@ pair_coeff	* * SiCGe.tersoff Si(D) Ge
 #--------------- Simulation control parameters ----------------------------------------------------------
 variable	T equal 300              				# Kelvin
 variable	V equal vol             				# A^3
-variable	dt equal 0.0008          				# 0.8fs; in picoseconds = 1e-12 s
+variable	dt equal 0.0005          				# 0.8fs; in picoseconds = 1e-12 s
 variable	NRUNNVT equal 200000
 variable        NRUNNPT equal 200000
 variable	NRUNanneal equal 5600000

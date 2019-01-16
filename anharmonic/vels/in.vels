@@ -26,7 +26,7 @@ timestep        0.0005				##1 fs timestep
 thermo          2000			
 
 variable	T equal 300
-variable	dT equal 20
+variable	dT equal 30
 variable	TR equal $T+${dT}/2
 variable	TL equal $T-${dT}/2
 
@@ -38,13 +38,10 @@ variable        x_min equal (xlo+${Vac}/2)
 print           ${x_min}
 variable        x_max equal (xhi-${Vac}/2)
 print           ${x_max}
-variable	lFixed equal 10.8
-variable 	lBath equal 54.3
-variable	lSlab equal 2.7
-variable	siFixed equal 10.6 
-variable	siBath equal 27
-variable	geFixed equal 11
-variable	geBath equal 28
+variable	siFixed equal 5.5 
+variable	siBath equal 27.16
+variable	geFixed equal 5.66
+variable	geBath equal 28.29
 
 # ----------- Fix some atoms to avoid drift ----      #Width of block with fixed atoms
 variable	x1 equal ${x_min}+${siFixed}
@@ -73,36 +70,6 @@ group           interface_left region left
 group           interface_right region right
 group           interface union interface_left interface_right
 
-
-#------- Si ----------
-variable        xsi equal 72.66 #coordinate of interface; must match exactly for forces and vels
-variable        xmid equal ${xsi}
-variable        xmidL equal ${xmid}-0.075
-variable        xmidR equal ${xmid}+0.075
-variable        xmidlo equal ${xmid}-${dmid}
-variable        xmidhi equal ${xmid}+${dmid}
-
-region          sileft block ${xmidlo} ${xmidL} INF INF INF INF units box
-region          siright block ${xmidR} ${xmidhi} INF INF INF INF units box
-group           si_left region sileft
-group           si_right region siright
-group           si union si_left si_right
-
-
-#------- Ge ----------
-variable        xge equal 97.59 #coordinate of interface; must match exactly for forces and vels
-variable        xmid equal ${xge}
-variable        xmidL equal ${xmid}-0.075
-variable        xmidR equal ${xmid}+0.075
-variable        xmidlo equal ${xmid}-${dmid}
-variable        xmidhi equal ${xmid}+${dmid}
-
-region          geleft block ${xmidlo} ${xmidL} INF INF INF INF units box
-region          geright block ${xmidR} ${xmidhi} INF INF INF INF units box
-group           ge_left region geleft
-group           ge_right region geright
-group           ge union ge_left ge_right
-
 ###########################################################################################
 # ----------- Define cold reservoir ----	#Total width of fixed atoms + reservoir atoms
 region          hot block ${x4} ${x2} INF INF INF INF		#Atoms in the cold reservoir
@@ -117,7 +84,6 @@ group           gcold region cold
 #group		blocks union gfixed ghot gcold interface si ge		#For checking the region definitions
 #dump		blocks blocks atom 10 blocks.lammpstrj  #For checking the region definitions
 ######
-
 
 # ----------- Distance between reservoirs -----------
 variable        Length equal ${NX}-(2*${lFixed}+2*${lBath})			#First and last slab act as reservoirs 
@@ -151,13 +117,12 @@ variable	Tis atom ${TL}+x/xhi*(${TR}-${TL}) #ty's addition
 
 reset_timestep	0
 #fix             NVT gmoves nvt temp ${T} ${T} 0.05 tchain 10
-fix		NVE gmoves nve #ty's addition
 fix		NVT gmoves langevin v_Tis 1.0 0.05 ${SEED} # zero yes # ty's addition
 fix		FREEZE gfixed setforce 0.0 0.0 0.0
 thermo_style	custom step temp c_real_temp pe etotal press pxx pyy pzz
 thermo_modify	flush yes
 
-run        	2000000
+run        	1000000
 unfix           NVT
 write_restart   restart.*
 dump_modify     snap every 2000000
@@ -178,7 +143,7 @@ variable 	temp atom c_ke/1.5/v_kB
 compute         cc1 gmoves chunk/atom bin/1d x lower ${lSlab} bound x ${lSlab} ${x2} units box
 compute         cc2 gmoves chunk/atom bin/1d x lower ${lSlab} bound x ${lSlab} ${x2} units box
 fix 		cc1_T gmoves ave/chunk 1 200000 200000 cc1 v_temp file tmp.profile.0
-run 		30000000
+run 		5000000
 write_restart   restart.*
 
 fix		cc2_T gmoves ave/chunk 1 200000 200000 cc2 v_temp file tmp.profile.final
@@ -193,28 +158,6 @@ dump_modify     ivels sort id
 dump            ipos interface custom 1000 interface.pos.dat id type x y z
 dump_modify     ipos format line "%d %d %0.8g %0.8g %0.8g"
 dump_modify     ipos sort id
-
-#----- Si -----------
-#variable        dt_dump equal 10
-#dump            sivels si custom ${dt_dump} si.vels.dat id type vx vy vz
-#dump_modify     sivels format line "%d %d %0.8g %0.8g %0.8g"
-#dump_modify     sivels sort id
-
-#dump            sipos si custom 1000 si.pos.dat id type x y z
-#dump_modify     sipos format line "%d %d %0.8g %0.8g %0.8g"
-#dump_modify     sipos sort id
-
-#------ Ge ----------
-#variable        dt_dump equal 10
-#dump            gevels ge custom ${dt_dump} ge.vels.dat id type vx vy vz
-#dump_modify     gevels format line "%d %d %0.8g %0.8g %0.8g"
-#dump_modify     gevels sort id
-
-#dump            gepos ge custom 1000 ge.pos.dat id type x y z
-#dump_modify     gepos format line "%d %d %0.8g %0.8g %0.8g"
-#dump_modify     gepos sort id
-
-##################################################################
 
 run             10000000
 write_restart	restart.final.*
