@@ -11,18 +11,15 @@ import copy as cp
 sig = 3.4
 a = 1.5496*sig/2.0 #scaling factor for integer basis array
 
-outfile = 'data.relax'
-#nx1 = int(raw_input('\tEnter number of unit cells of Ar in x:\n\t>'))
-#nx2 = int(raw_input('\tEnter number of unit cells of heavy-Argon in x:\n\t>'))
-#ny = int(raw_input('\tEnter width in y:\n\t>'))
-#nz = int(raw_input('\tEnter width in z:\n\t>'))
-#nx = nx1+nx2
-
-nx1 = 30
-nx2 = 30
+nx1 = int(raw_input('\tEnter number of unit cells of Ar in x:\n\t>'))
+nx2 = int(raw_input('\tEnter number of unit cells of heavy-Argon in x:\n\t>'))
+ny = int(raw_input('\tEnter width in y:\n\t>'))
+nz = int(raw_input('\tEnter width in z:\n\t>'))
 nx = nx1+nx2
-ny = 10 
-nz = 10
+lammps = str(raw_input('\tEnter the name of the lammps data file or "none" if '
+                       'you dont want one\n\t>'))
+xyz = str(raw_input('\tEnter the name of the xyz data file or "none" if '
+                       'you dont want one\n\t>'))
 
 basis = np.array([[0,0,0],
                   [0,1,1],
@@ -69,20 +66,32 @@ ymin = pos[:,3].min()-buff
 ymax = pos[:,3].max()+buff
 zmin = pos[:,4].min()-buff
 zmax = pos[:,4].max()+buff
-with open(outfile,'w') as fid:
-    fid.write('LAMMPS DATA FILE\n\n'+str(size)+' atoms\n\n'+str(types)+
-              ' atom types\n\n')
-    fid.write(str(xmin)+' '+str(xmax)+' xlo xhi\n')
-    fid.write(str(ymin)+' '+str(ymax)+' ylo yhi\n')
-    fid.write(str(zmin)+' '+str(zmax)+' zlo zhi\n')
-    fid.write('\nMasses\n\n')
-    for i in range(types):
-        fid.write(str(i+1)+' '+str(masses[i])+'\n')
-    fid.write('\nAtoms\n\n')
-    for i in range(size-1):
-        fid.write(str(int(pos[i,0]))+' '+str(int(pos[i,1]))+' '+str(pos[i,2])+
-                  ' '+str(pos[i,3])+' '+str(pos[i,4])+'\n')
-    fid.write(str(int(pos[-1,0]))+' '+str(int(pos[-1,1]))+' '+str(pos[-1,2])+
-                  ' '+str(pos[-1,3])+' '+str(pos[-1,4]))
     
+if lammps != 'no':
+    with open(lammps,'w') as fid:
+        fid.write('LAMMPS DATA FILE\n\n'+str(size)+' atoms\n\n'+str(types)+
+                  ' atom types\n\n')
+        fid.write(str(xmin)+' '+str(xmax)+' xlo xhi\n')
+        fid.write(str(ymin)+' '+str(ymax)+' ylo yhi\n')
+        fid.write(str(zmin)+' '+str(zmax)+' zlo zhi\n')
+        fid.write('\nMasses\n\n')
+        for i in range(types):
+            fid.write(str(i+1)+' '+str(masses[i])+'\n')
+        fid.write('\nAtoms\n\n')
+        for i in range(size-1):
+            fid.write(str(int(pos[i,0]))+' '+str(int(pos[i,1]))+' '+str(pos[i,2])+
+                      ' '+str(pos[i,3])+' '+str(pos[i,4])+'\n')
+        fid.write(str(int(pos[-1,0]))+' '+str(int(pos[-1,1]))+' '+str(pos[-1,2])+
+                      ' '+str(pos[-1,3])+' '+str(pos[-1,4]))
+        
+if xyz != 'no':
+    with open(xyz,'w') as fid:
+        fid.write(str(size)+'\n')
+        fid.write(str(xmin)+' '+str(xmax)+' '+str(ymin)+' '+str(ymax)+' '+
+                  str(zmin)+' '+str(zmax)+'\n')
+        for i in range(size-1):
+            fid.write(str(int(pos[i,1]))+' '+str(pos[i,2])+
+                      ' '+str(pos[i,3])+' '+str(pos[i,4])+'\n')
+        fid.write(str(int(pos[-1,1]))+' '+str(pos[-1,2])+
+                      ' '+str(pos[-1,3])+' '+str(pos[-1,4]))
 
