@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Wed Jun 20 17:12:28 2018
@@ -34,7 +34,7 @@ print ('\n\n\nThis program initializes FCC diamond structures, e.g. C-diamond, S
        '------------------------------------------------------------------------------------------------\n\n')
 
 ###get species type from user
-species = input('Enter a species type for the bulk strcuture: (USAGE: C, Si, Ge, or Si/Ge)\n>')
+species = raw_input('Enter a species type for the bulk strcuture: (USAGE: C, Si, Ge, or Si/Ge)\n>')
 
 ###set lattice constant
 if species == 'C':
@@ -48,44 +48,44 @@ else:
     
 ###check validity of input
 if (species == 'C') or (species == 'Si') or (species == 'Ge') or (species == 'Si/Ge'):
-    print(('\n\tYou entered: ' + species + '\n\tLattice constant is: ' + str(b) + ' A\n'))
+    print ('\n\tYou entered: ' + species + '\n\tLattice constant is: ' + str(b) + ' A\n')
 else:
     sys.exit('USAGE ERROR: Enter either C, Si, Si/Ge, or Ge')
 
 ###get size of material
 if species == 'Si/Ge':
-    n_si = int(input('\nEnter the number of Si unit cells: (USAGE: an integer greater than 0)\n>'))
-    n_ge = int(input('\nEnter the number of Ge unit cells: (USAGE: an integer greater than 0)\n>'))
+    n_si = int(raw_input('\nEnter the number of Si unit cells: (USAGE: an integer greater than 0)\n>'))
+    n_ge = int(raw_input('\nEnter the number of Ge unit cells: (USAGE: an integer greater than 0)\n>'))
     if (n_si <= 0) or (n_ge <=0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
     nx = n_si + n_ge
-    ny = int(input('\nEnter number of unit cells in y-direction: (USAGE: an interger greater than 0)\n>'))
+    ny = int(raw_input('\nEnter number of unit cells in y-direction: (USAGE: an interger greater than 0)\n>'))
     if (ny <= 0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
-    nz = int(input('\nEnter number of unit cells in z-direction: (USAGE: an interger greater than 0)\n>'))
+    nz = int(raw_input('\nEnter number of unit cells in z-direction: (USAGE: an interger greater than 0)\n>'))
     if (nz <= 0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
 else:
-    nx = int(input('\nEnter number of unit cells in x-direction: (USAGE: an interger greater than 0)\n>'))
+    nx = int(raw_input('\nEnter number of unit cells in x-direction: (USAGE: an interger greater than 0)\n>'))
     if (nx <= 0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
-    ny = int(input('\nEnter number of unit cells in y-direction: (USAGE: an interger greater than 0)\n>'))
+    ny = int(raw_input('\nEnter number of unit cells in y-direction: (USAGE: an interger greater than 0)\n>'))
     if (ny <= 0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
-    nz = int(input('\nEnter number of unit cells in z-direction: (USAGE: an interger greater than 0)\n>'))
+    nz = int(raw_input('\nEnter number of unit cells in z-direction: (USAGE: an interger greater than 0)\n>'))
     if (nz <= 0):
         sys.exit('USAGE ERROR: the number of unit cells must be greater than 0')
     
 ###display system size info    
-print(('\n\tnx = ' + str(nx) + '\n\tny = ' + str(ny) + '\n\tnz = ' + str(nz) + '\n\n\tTotal Number of atoms = ' + 
-           str(nx*ny*nz*8)))
+print ('\n\tnx = ' + str(nx) + '\n\tny = ' + str(ny) + '\n\tnz = ' + str(nz) + '\n\n\tTotal Number of atoms = ' + 
+           str(nx*ny*nz*8))
 
 ###get defected region and check input
-defect = input('\nAre there any defects? (USAGE: yes or no)\n>')
+defect = raw_input('\nAre there any defects? (USAGE: yes or no)\n>')
 if (defect != 'yes') and (defect != 'no'):
     sys.exit('\nUSAGE ERROR: enter either yes or no')
 if defect == 'yes':
-    left_block = input('\n\n------------------------------------------------------------------------------------\n'
+    left_block = raw_input('\n\n------------------------------------------------------------------------------------\n'
                            'Select a range to include defects or type "all" to include defects in the entire structure. '
                            'If a range is specified,\ndefects are placed in and between the "left most" and "right most" '
                            'specified unit cells. For Si/Ge structures, input\nfor each side of the interface will '
@@ -97,11 +97,11 @@ if defect == 'yes':
             left_block = int(left_block)
         except ValueError:
             sys.exit('USAGE ERROR: enter "all" or an integer from 1 to ' + str(nx-1) + '.')
-        r = list(range(1,nx))
+        r = range(1,nx)
         if left_block not in r:
             sys.exit('USAGE ERROR: enter "all" or an integer from 1 to ' + str(nx-1) + '.')
-        right_block = int(input('\nRIGHT BLOCK: (USAGE: an integer from 2 to ' + str(nx) + ')\n>'))
-        r = list(range(2,(nx+1)))
+        right_block = int(raw_input('\nRIGHT BLOCK: (USAGE: an integer from 2 to ' + str(nx) + ')\n>'))
+        r = range(2,(nx+1))
         if right_block not in r:
             sys.exit('USAGE ERROR: please enter an integer from 2 to ' + str(nx) + '.')
         del r
@@ -235,14 +235,14 @@ del types, ids
 ###find out which defect types to include
 if str(defect) != 'no':
     region = data[((left_block-1)*ny*nz*8):(right_block*ny*nz*8)][:]
-    data = np.delete(data, list(range(((left_block-1)*ny*nz*8),(right_block*ny*nz*8))), axis=0)
+    data = np.delete(data, range(((left_block-1)*ny*nz*8),(right_block*ny*nz*8)), axis=0)
     atoms = len(region)
     intdata = intdata[((left_block-1)*ny*nz*4):(right_block*ny*nz*4)][:]
 #    intdata = np.delete(intdata, range(((left_block-1)*ny*nz*4),(right_block*ny*nz*4)), axis=0)
-    print(('\n\n\tThere are ' + str(len(region)) + ' Atoms in the defected region.\n'))
+    print('\n\n\tThere are ' + str(len(region)) + ' Atoms in the defected region.\n')
     split_region = 'no'
     if (species == 'Si/Ge'):# and (all_flag != True):
-        split_region = input('\n-----------------------------------------------------------'
+        split_region = raw_input('\n-----------------------------------------------------------'
                                  '-----------------------------------------------------------\n'
                                  'This is a Si/Ge heterostructure with ' + str(n_si) + ' Si unit cell layers '
                                  'on the left and ' + str(n_ge) + ' Ge unit cell layers on the right.\n\n'
@@ -258,7 +258,7 @@ if str(defect) != 'no':
                 if intdata[i,1] == 2:
                     lint_ids = i
             lint_data = intdata[:lint_ids+1,:]
-            intdata = np.delete(intdata, list(range(lint_ids+1)),axis=0)
+            intdata = np.delete(intdata, range(lint_ids+1),axis=0)
             rint_data = intdata
             del intdata
             for i in range(len(region)):
@@ -266,68 +266,68 @@ if str(defect) != 'no':
                     left_ids = i
             left_region = region[:left_ids+1][:]
             si_atoms = len(left_region)
-            region = np.delete(region, list(range(left_ids+1)), axis=0)
+            region = np.delete(region, range(left_ids+1), axis=0)
             right_region = region
             ge_atoms = len(right_region)
             del region
-            print(('\n\tThere are ' + str(len(left_region)) + ' atoms in the Si section and ' +
-                   str(len(right_region)) + ' atoms in the Ge region.\n'))
+            print ('\n\tThere are ' + str(len(left_region)) + ' atoms in the Si section and ' +
+                   str(len(right_region)) + ' atoms in the Ge region.\n')
             ###Si side
             try:
                 ###find out how many point defects for heterogeneous systems
-                l_type = input('\nWhat is the species of the Si region subsitutional? (USAGE: none or C, Si, or Ge)\n>')
+                l_type = raw_input('\nWhat is the species of the Si region subsitutional? (USAGE: none or C, Si, or Ge)\n>')
                 if l_type != 'C' and l_type != 'Si' and l_type != 'Ge' and l_type != 'none':
                     sys.exit('USAGE ERROR: Substitutional type must be "none" or C, Si, or Ge')
-                lnum_subs = int(input('\nHow many substitutional defects in Si region?\n>'))
-                lnum_self = int(input('\nHow many SELF-interstitials in Si region?\n>'))
-                lnum_ints = int(input('\nHow many IMPURITY-interstitials in Si region?\n'
+                lnum_subs = int(raw_input('\nHow many substitutional defects in Si region?\n>'))
+                lnum_self = int(raw_input('\nHow many SELF-interstitials in Si region?\n>'))
+                lnum_ints = int(raw_input('\nHow many IMPURITY-interstitials in Si region?\n'
                                           'NOTE: impurity type is same as subsitutional.\n>'))
-                lnum_vacs = int(input('\nHow many vacancies in Si region?\n>'))
+                lnum_vacs = int(raw_input('\nHow many vacancies in Si region?\n>'))
                 ###find out if pairs are included
-                lnum_selffrenkel = int(input('\nHow many SELF-intersitial-vacancy pairs in Si region?\n>'))
-                lnum_frenkel = int(input('\nHow many IMPURTIY-interstital-vacancy pairs in Si region?\n'
+                lnum_selffrenkel = int(raw_input('\nHow many SELF-intersitial-vacancy pairs in Si region?\n>'))
+                lnum_frenkel = int(raw_input('\nHow many IMPURTIY-interstital-vacancy pairs in Si region?\n'
                                              'NOTE: impurity type is same as subsitutional.\n>'))
-                lnum_v2 = int(input('\nHow many vacancy pairs in Si region?\n>'))
+                lnum_v2 = int(raw_input('\nHow many vacancy pairs in Si region?\n>'))
             except ValueError:
                 sys.exit('\nEnter an integer between 0 and ' + str(len(left_region)) + '\n')
             ###Ge side
             try:
                 ###find out how many point defects for heterogeneous systems
-                r_type = input('\n---------------------------------------------------------------------------------\n'
+                r_type = raw_input('\n---------------------------------------------------------------------------------\n'
                                    '\nWhat is the species of the Ge region subsitutional? (USAGE: none or C, Si, or Ge)\n>')
                 if r_type != 'C' and r_type != 'Si' and r_type != 'Ge' and r_type != 'none':
                     sys.exit('USAGE ERROR: Substitutional type must be "none" or C, Si, or Ge')
-                rnum_subs = int(input('\nHow many substitutional defects in Ge region?\n>'))
-                rnum_self = int(input('\nHow many SELF-interstitials in Ge region?\n>'))
-                rnum_ints = int(input('\nHow many IMPURITY-interstitials in Ge region?\n'
+                rnum_subs = int(raw_input('\nHow many substitutional defects in Ge region?\n>'))
+                rnum_self = int(raw_input('\nHow many SELF-interstitials in Ge region?\n>'))
+                rnum_ints = int(raw_input('\nHow many IMPURITY-interstitials in Ge region?\n'
                                           'NOTE: impurity type is same as subsitutional.\n>'))
-                rnum_vacs = int(input('\nHow many vacancies in Ge region?\n>'))
+                rnum_vacs = int(raw_input('\nHow many vacancies in Ge region?\n>'))
                 ###find out if pairs are included
-                rnum_selffrenkel = int(input('\nHow many SELF-intersitial-vacancy pairs in Ge region?\n>'))
-                rnum_frenkel = int(input('\nHow many IMPURTIY-interstital-vacancy pairs in Ge region?\n'
+                rnum_selffrenkel = int(raw_input('\nHow many SELF-intersitial-vacancy pairs in Ge region?\n>'))
+                rnum_frenkel = int(raw_input('\nHow many IMPURTIY-interstital-vacancy pairs in Ge region?\n'
                                              'NOTE: impurity type is same as subsitutional.\n>'))
-                rnum_v2 = int(input('\nHow many vacancy pairs in Ge region?\n>'))
+                rnum_v2 = int(raw_input('\nHow many vacancy pairs in Ge region?\n>'))
             except ValueError:
                 sys.exit('\nEnter an integer between 0 and ' + str(len(right_region)) + '\n')
             
     ###homogeneous systems
     if split_region == 'no':
-        print(('\nThere are ' + str(len(region)) + ' atoms in the defected region.\n'))
+        print ('\nThere are ' + str(len(region)) + ' atoms in the defected region.\n')
         try:
             ###find out how many point defects for homogeneous systems
-            all_type = input('\nWhat is the species of the subsitutional? (USAGE: none or C, Si, or Ge)\n>')
+            all_type = raw_input('\nWhat is the species of the subsitutional? (USAGE: none or C, Si, or Ge)\n>')
             if all_type != 'C' and all_type != 'Si' and all_type != 'Ge' and all_type != 'none':
                     sys.exit('USAGE ERROR: Substitutional type must be "none" or C, Si, or Ge')
-            num_subs = int(input('\nHow many substitutional defects?\n>'))
-            num_self = int(input('\nHow many SELF-interstitials?\n>'))
-            num_ints = int(input('\nHow many IMPURITY-interstitials?\n'
+            num_subs = int(raw_input('\nHow many substitutional defects?\n>'))
+            num_self = int(raw_input('\nHow many SELF-interstitials?\n>'))
+            num_ints = int(raw_input('\nHow many IMPURITY-interstitials?\n'
                                      'NOTE: impurity type is same as subsitutional.\n>'))
-            num_vacs = int(input('\nHow many vacancies?\n>'))
+            num_vacs = int(raw_input('\nHow many vacancies?\n>'))
             ###find out if pairs are included
-            num_selffrenkel = int(input('\nHow many SELF-intersitial-vacancy pairs?\n>'))
-            num_frenkel = int(input('\nHow many IMPURTIY-interstital-vacancy pairs?\n'
+            num_selffrenkel = int(raw_input('\nHow many SELF-intersitial-vacancy pairs?\n>'))
+            num_frenkel = int(raw_input('\nHow many IMPURTIY-interstital-vacancy pairs?\n'
                                         'NOTE: impurity type is same as subsitutional.\n>'))
-            num_v2 = int(input('\nHow many vacancy pairs?\n>'))
+            num_v2 = int(raw_input('\nHow many vacancy pairs?\n>'))
         except ValueError:
             sys.exit('\nEnter an integer between 0 and ' + len(region) + '\n')
 ####################################################
@@ -344,35 +344,35 @@ if str(defect) != 'no':
         
         ###left side
         if lnum_subs != 0: #remove subs from region and change type
-            randids = np.array(random.sample(list(range(len(left_region))), lnum_subs))
+            randids = np.array(random.sample(range(len(left_region)), lnum_subs))
             lsubs = left_region[randids,:]
             left_region = np.delete(left_region, randids, axis=0)
             lsubs[:,1] = 8
             data = np.append(data,lsubs,axis=0)
 
         if lnum_self != 0: #remove self interstitial sites from region
-            randids = np.array(random.sample(list(range(len(lint_data))), lnum_self))
+            randids = np.array(random.sample(range(len(lint_data)), lnum_self))
             lself = lint_data[randids,:]
             lint_data = np.delete(lint_data,randids,axis=0)
             lself[:,1] = left_region[0,1]
             data = np.append(data,lself,axis=0)
         
         if lnum_ints != 0: #remove impurity interstitial sites from region
-            randids = np.array(random.sample(list(range(len(lint_data))), lnum_ints))
+            randids = np.array(random.sample(range(len(lint_data)), lnum_ints))
             lints = lint_data[randids,:]
             lint_data = np.delete(lint_data,randids,axis=0)
             lints[:,1] = 8
             data = np.append(data,lints,axis=0)
         
         if lnum_vacs != 0: #remove single vacancy sites from region
-            randids = np.array(random.sample(list(range(len(left_region))), lnum_vacs))
+            randids = np.array(random.sample(range(len(left_region)), lnum_vacs))
             lvacs = left_region[randids,:]
             left_region = np.delete(left_region, randids, axis=0)
             lvacs[:,1] = 10
             example = np.append(example,lvacs,axis=0)
             
         if lnum_selffrenkel != 0: #remove self-inter sites to form pairs
-            randids = np.array(random.sample(list(range(len(lint_data))), lnum_selffrenkel))
+            randids = np.array(random.sample(range(len(lint_data)), lnum_selffrenkel))
             lselffrenkel = lint_data[randids,:]
             lint_data = np.delete(lint_data,randids,axis=0)
             lselffrenkel[:,1] = left_region[0,1]
@@ -385,7 +385,7 @@ if str(defect) != 'no':
                                    +(lselffrenkel[i,4]-left_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 lselffrenkelpair[i,:] = left_region[int(nn_dist[rand,0]),:] #vacancy pair
                 left_region = np.delete(left_region, int(nn_dist[rand,0]), axis=0) #delete from population
             lselffrenkelpair[:,1] = 10
@@ -393,7 +393,7 @@ if str(defect) != 'no':
             example = np.append(example,lselffrenkelpair,axis=0)
         
         if lnum_frenkel != 0: #remove inter sites to form pairs
-            randids = np.array(random.sample(list(range(len(lint_data))), lnum_frenkel))
+            randids = np.array(random.sample(range(len(lint_data)), lnum_frenkel))
             lfrenkel = lint_data[randids,:]
             lint_data = np.delete(lint_data,randids,axis=0)
             lfrenkel[:,1] = 8
@@ -406,7 +406,7 @@ if str(defect) != 'no':
                                    +(lfrenkel[i,4]-left_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 lfrenkelpair[i,:] = left_region[int(nn_dist[rand,0]),:] #vacancy pair
                 left_region = np.delete(left_region, int(nn_dist[rand,0]), axis=0) #delete from population
             lfrenkelpair[:,1] = 10
@@ -414,7 +414,7 @@ if str(defect) != 'no':
             example = np.append(example,lfrenkelpair,axis=0)
         
         if lnum_v2 != 0: #remove vacancy sites to form pairs
-            randids = np.array(random.sample(list(range(len(left_region))), lnum_v2))
+            randids = np.array(random.sample(range(len(left_region)), lnum_v2))
             lv2 = left_region[randids,:]
             left_region = np.delete(left_region, randids, axis=0)
             lv2pair = np.zeros((len(lv2),5))
@@ -426,7 +426,7 @@ if str(defect) != 'no':
                                    +(lv2[i,4]-left_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 lv2pair[i,:] = left_region[int(nn_dist[rand,0]),:] #second vacancies
                 left_region = np.delete(left_region, int(nn_dist[rand,0]), axis=0) #delete from population
             lv2[:,1] = 10
@@ -437,35 +437,35 @@ if str(defect) != 'no':
         
         ###right side
         if rnum_subs != 0:
-            randids = np.array(random.sample(list(range(len(right_region))), rnum_subs))
+            randids = np.array(random.sample(range(len(right_region)), rnum_subs))
             rsubs = right_region[randids,:]
             right_region = np.delete(right_region, randids, axis=0)
             rsubs[:,1] = 7
             data = np.append(data,rsubs,axis=0)
         
         if rnum_self != 0:
-            randids = np.array(random.sample(list(range(len(rint_data))), rnum_self))
+            randids = np.array(random.sample(range(len(rint_data)), rnum_self))
             rself = rint_data[randids,:]
             rint_data = np.delete(rint_data,randids,axis=0)
             rself[:,1] = right_region[0,1]
             data = np.append(data,rself,axis=0)
         
         if rnum_ints != 0:
-            randids = np.array(random.sample(list(range(len(rint_data))), rnum_ints))
+            randids = np.array(random.sample(range(len(rint_data)), rnum_ints))
             rints = rint_data[randids,:]
             rint_data = np.delete(rint_data,randids,axis=0)
             rints[:,1] = 7
             data = np.append(data,rints,axis=0)
         
         if rnum_vacs != 0:
-            randids = np.array(random.sample(list(range(len(right_region))), rnum_vacs))
+            randids = np.array(random.sample(range(len(right_region)), rnum_vacs))
             rvacs = right_region[randids,:]
             right_region = np.delete(right_region, randids, axis=0)
             rvacs[:,1] = 10
             example = np.append(example,rvacs,axis=0)
         
         if rnum_selffrenkel != 0:
-            randids = np.array(random.sample(list(range(len(rint_data))), rnum_selffrenkel))
+            randids = np.array(random.sample(range(len(rint_data)), rnum_selffrenkel))
             rselffrenkel = rint_data[randids,:]
             rint_data = np.delete(rint_data,randids,axis=0)
             rselffrenkel[:,1] = right_region[0,1]
@@ -478,7 +478,7 @@ if str(defect) != 'no':
                                    +(rselffrenkel[i,4]-right_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 rselffrenkelpair[i,:] = right_region[int(nn_dist[rand,0]),:] #vacancy pair
                 right_region = np.delete(right_region, int(nn_dist[rand,0]), axis=0) #delete from population
             rselffrenkelpair[:,1] = 10
@@ -486,7 +486,7 @@ if str(defect) != 'no':
             example = np.append(example,rselffrenkelpair,axis=0)
         
         if rnum_frenkel != 0:
-            randids = np.array(random.sample(list(range(len(rint_data))), rnum_frenkel))
+            randids = np.array(random.sample(range(len(rint_data)), rnum_frenkel))
             rfrenkel = rint_data[randids,:]
             rint_data = np.delete(rint_data,randids,axis=0)
             rfrenkel[:,1] = 7
@@ -499,7 +499,7 @@ if str(defect) != 'no':
                                    +(rfrenkel[i,4]-right_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 rfrenkelpair[i,:] = right_region[int(nn_dist[rand,0]),:] #vacancy pair
                 right_region = np.delete(right_region, int(nn_dist[rand,0]), axis=0) #delete from population
             rfrenkelpair[:,1] = 10
@@ -507,7 +507,7 @@ if str(defect) != 'no':
             example = np.append(example,rfrenkelpair,axis=0)
 
         if rnum_v2 != 0:
-            randids = np.array(random.sample(list(range(len(right_region))), rnum_v2))
+            randids = np.array(random.sample(range(len(right_region)), rnum_v2))
             rv2 = right_region[randids,:]
             right_region = np.delete(right_region, randids, axis=0)
             rv2pair = np.zeros((len(rv2),5))
@@ -519,7 +519,7 @@ if str(defect) != 'no':
                                    +(rv2[i,4]-right_region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 rv2pair[i,:] = right_region[int(nn_dist[rand,0]),:] #second vacancies
                 right_region = np.delete(right_region, int(nn_dist[rand,0]), axis=0) #delete from population
             rv2[:,1] = 10
@@ -533,35 +533,35 @@ if str(defect) != 'no':
     ###uniform defects
     else:
         if num_subs != 0:
-            randids = np.array(random.sample(list(range(len(region))), num_subs))
+            randids = np.array(random.sample(range(len(region)), num_subs))
             allsubs = region[randids,:]
             region = np.delete(region, randids, axis=0)
             allsubs[:,1] = 9
             data = np.append(data,allsubs,axis=0)
                 
         if num_self != 0:
-            randids = np.array(random.sample(list(range(len(intdata))), num_self))
+            randids = np.array(random.sample(range(len(intdata)), num_self))
             allself = intdata[randids,:]
             intdata = np.delete(intdata,randids,axis=0)
             allself[:,1] = region[0,1]
             data = np.append(data,allself,axis=0)
         
         if num_ints != 0:
-            randids = np.array(random.sample(list(range(len(intdata))), num_ints))
+            randids = np.array(random.sample(range(len(intdata)), num_ints))
             allints = intdata[randids,:]
             intdata = np.delete(intdata,randids,axis=0)
             allints[:,1] = 9
             data = np.append(data,allints,axis=0)
         
         if num_vacs != 0:
-            randids = np.array(random.sample(list(range(len(region))), num_vacs))
+            randids = np.array(random.sample(range(len(region)), num_vacs))
             allvacs = region[randids,:]
             region = np.delete(region, randids, axis=0)
             allvacs[:,1] = 10
             example = np.append(example,allvacs,axis=0)
         
         if num_selffrenkel != 0:
-            randids = np.array(random.sample(list(range(len(intdata))), num_selffrenkel))
+            randids = np.array(random.sample(range(len(intdata)), num_selffrenkel))
             allselffrenkel = intdata[randids,:]
             intdata = np.delete(intdata,randids,axis=0)
             allselffrenkel[:,1] = region[0,1]
@@ -574,7 +574,7 @@ if str(defect) != 'no':
                                    +(allselffrenkel[i,4]-region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 allselffrenkelpair[i,:] = region[int(nn_dist[rand,0]),:] #vacancy pair
                 region = np.delete(region, int(nn_dist[rand,0]), axis=0) #delete from population
             allselffrenkelpair[:,1] = 10
@@ -582,7 +582,7 @@ if str(defect) != 'no':
             example = np.append(example,allselffrenkelpair,axis=0)
         
         if num_frenkel != 0:
-            randids = np.array(random.sample(list(range(len(intdata))), num_frenkel))
+            randids = np.array(random.sample(range(len(intdata)), num_frenkel))
             allfrenkel = intdata[randids,:]
             intdata = np.delete(intdata,randids,axis=0)
             allfrenkel[:,1] = 9
@@ -595,7 +595,7 @@ if str(defect) != 'no':
                                    +(allfrenkel[i,4]-region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 allfrenkelpair[i,:] = region[int(nn_dist[rand,0]),:] #vacancy pair
                 region = np.delete(region, int(nn_dist[rand,0]), axis=0) #delete from population
             allfrenkelpair[:,1] = 10
@@ -603,7 +603,7 @@ if str(defect) != 'no':
             example = np.append(example,allfrenkelpair,axis=0)
                 
         if num_v2 != 0:
-            randids = np.array(random.sample(list(range(len(region))), num_v2))
+            randids = np.array(random.sample(range(len(region)), num_v2))
             allv2 = region[randids,:]
             region = np.delete(region, randids, axis=0)
             allv2pair = np.zeros((len(allv2),5))
@@ -615,7 +615,7 @@ if str(defect) != 'no':
                                    +(allv2[i,4]-region[j,4])**2)
                 nn_dist = nn_dist[nn_dist[:,1].argsort()]
                 num = (nn_dist[:,1] <= nn_dist[0,1]+0.1).sum()
-                rand = random.sample(list(range(num)),1)
+                rand = random.sample(range(num),1)
                 allv2pair[i,:] = region[int(nn_dist[rand,0]),:] #second vacancies
                 region = np.delete(region, int(nn_dist[rand,0]), axis=0) #delete from population
             allv2[:,1] = 10
@@ -873,12 +873,12 @@ with open(datafile, 'w') as f:
 ##################################################
 
 if defect != 'yes':     
-    print(('\n\t-------------------------------------------------------\n\t'
+    print('\n\t-------------------------------------------------------\n\t'
           'ALL DONE! Find "' + filename + '", "config_info.txt",\n\t'
           'and "' + datafile + '" in your current directory!\n\n\t"config_info.txt" contains information about'
-          ' the numbers and types of defects in your system.\n\tKeep it with the config files!\n\n\n'))        
+          ' the numbers and types of defects in your system.\n\tKeep it with the config files!\n\n\n')        
 else:
-    print(('\n\t-------------------------------------------------------\n\t'
+    print('\n\t-------------------------------------------------------\n\t'
           'ALL DONE! Find "' + filename + '", "' + exfilename + '", "config_info.txt",\n\t'
           'and "' + datafile + '" in your current directory!\n\n\t"config_info.txt" contains information about'
-          ' the numbers and types of defects in your system.\n\tKeep it with the config files!\n\n\n'))        
+          ' the numbers and types of defects in your system.\n\tKeep it with the config files!\n\n\n')        

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 """
 Created on Fri Mar  8 10:21:12 2019
@@ -11,14 +11,14 @@ import copy as cp
 sig = 3.4
 a = 1.5496*sig/2.0 #scaling factor for integer basis array
 
-nx1 = int(input('Enter number of unit cells of Ar in x:\n\t>'))
-nx2 = int(input('Enter number of unit cells of heavy-Argon in x:\n\t>'))
-ny = int(input('Enter width in y:\n\t>'))
-nz = int(input('Enter width in z:\n\t>'))
+nx1 = int(raw_input('Enter number of unit cells of Ar in x:\n\t>'))
+nx2 = int(raw_input('Enter number of unit cells of heavy-Argon in x:\n\t>'))
+ny = int(raw_input('Enter width in y:\n\t>'))
+nz = int(raw_input('Enter width in z:\n\t>'))
 nx = nx1+nx2
-lammps = str(input('Enter the name of the lammps data file or "none" if '
+lammps = str(raw_input('Enter the name of the lammps data file or "none" if '
                        'you dont want one\n\t>'))
-xyz = str(input('Enter the name of the xyz data file or "none" if '
+xyz = str(raw_input('Enter the name of the xyz data file or "none" if '
                        'you dont want one\n\t>'))
 
 basis = np.array([[0,0,0],
