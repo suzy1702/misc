@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 #plt.switch_backend('TKagg')
 
 ##### GET TEMP DATA #####
-suffix = input("Enter the suffix of the temperature file:\n->")
+suffix = raw_input("Enter the suffix of the temperature file:\n->")
 filename = 'tmp.profile.'+suffix
 num_lines = sum(1 for line in open(filename))-3 #how many lines
 
@@ -61,19 +61,19 @@ plt.show()
 
 ##### GET INDICIES AND FIT #####
 ind = np.zeros((5,1))
-ind[0] = int(input("\nLeft side of left chunk:\n->"))
+ind[0] = int(raw_input("\nLeft side of left chunk:\n->"))
 if ind[0] < 0:
     sys.exit('Index must be positive')
-ind[1] = int(input("\nRight side of left chunk:\n->"))
+ind[1] = int(raw_input("\nRight side of left chunk:\n->"))
 if ind[1] <= ind[0]:
     sys.exit('Index must greater than previous one')
-ind[2] = int(input("\nCenter of interface (if present):\n->"))
+ind[2] = int(raw_input("\nCenter of interface (if present):\n->"))
 if ind[2] <= ind[1]:
     sys.exit('Index must greater than previous one')
-ind[3] = int(input("\nLeft side of right chunk:\n->"))
+ind[3] = int(raw_input("\nLeft side of right chunk:\n->"))
 if ind[3] <= ind[2]:
     sys.exit('Index must greater than previous one')
-ind[4] = int(input("\nRight side of right chunk:\n->"))
+ind[4] = int(raw_input("\nRight side of right chunk:\n->"))
 if ind[4] <= ind[3]:
     sys.exit('Index must greater than previous one')
     
