@@ -29,7 +29,7 @@ with open(filename, 'r') as fid:
     
     #only keep the last 10% of the data... converged
     num_keep = np.round(int(num_blocks*0.9))
-    for i in range(num_blocks-num_keep-1):
+    for i in range(int(num_blocks-num_keep-1)):
         for j in range(int(info[1])+1):
             etc = fid.readline()
     for i in range(int(info[1])):
