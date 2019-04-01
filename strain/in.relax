@@ -1,0 +1,93 @@
+atom_style	atomic 
+units		metal
+dimension	3
+boundary	p p p
+processors	* * *
+
+# ---------------------------------------------------------
+read_data       data.strained
+pair_style	tersoff
+pair_coeff	* * SiCGe.tersoff Si(D) Ge
+
+#--------------- Simulation control parameters ----------------------------------------------------------
+variable	T equal 300              				# Kelvin
+variable	Thi equal 750
+variable	V equal vol             				# A^3
+
+variable	dt equal 0.0005          		# 0.8fs; in picoseconds = 1e-12 s
+variable	NRUNNVT equal 200000
+variable        NRUNNPT equal 2000000
+variable	NRUNanneal equal 6000000 #quench 1e11 K/ second 
+variable	NRUNNVE equal 200000
+variable	thermocalc equal 20000
+variable	snapprint equal 200000
+
+variable        Lx equal xhi-xlo
+variable        Ly equal yhi-ylo
+print           "Lx = ${Lx} A"
+print           "Ly = ${Ly} A"
+timestep  	${dt}
+thermo_style	custom step temp pe etotal press pxx pyy pzz lx ly lz 
+
+# -------------- Print structure -----------------------
+dump		snapxyz all custom ${snapprint} sisnap.lammpstrj id type x y z
+#dump           snapxyz all custom 1 sisnap.lammpstrj id type x y z
+
+# -------------- Relax Structure at 0K --------------------------
+fix		filmrelax all box/relax x 0 couple none		
+#'x 0' relaxes only in the x (transport) direction; strain applied in y and z 
+
+minimize	0.0 1.0e-8 100000 10000000 
+
+#energy minimization critera: stop if change in energy between steps is 0, the largest force 
+#acting on any atom is less that 1.0e-8 (units), the total number of iterations reaches 100000,
+#the total number of force calulations reaches 10e6
+ 
+min_style	sd #steepest descent method
+min_modify	dmax 0.2 #maximum step to move an atom to find min. energy step
+
+thermo		100
+write_restart	restart.min.*
+
+# -------------- NVT Thermalization ------------------------------
+restart		500000 restart
+thermo          ${thermocalc}
+velocity	all create ${Thi} ${SEED} mom yes rot yes dist gaussian 
+fix		NVT all nvt temp ${Thi} ${Thi} 0.05 tchain 10 #equilibrate at 750 K, tdamp = ~ 100*dt #was 0.05 changes to 0.1
+run		${NRUNNVT}
+unfix		NVT
+write_restart	restart.NVT.*
+
+# ------------ QUENCH -----------------------------------------
+fix             equil all langevin ${Thi} $T 0.05 ${langSEED} tally yes zero yes #tdamp = ~ 100*dt #was 0.05
+fix             NVE all nve
+run             ${NRUNanneal}
+unfix           equil
+unfix           NVE
+write_restart	restart.anneal.300.*
+
+# -------------- NVE Equilibration ----------------------------------
+fix             NVE all nve #equilibrate at temp, T = 300
+dump            snapNVExyz all custom ${snapprint} snap.NVE.lammpstrj id type x y z
+run             ${NRUNNVE}
+unfix           NVE
+write_restart   restart.anneal.NVE.*
+# ------------ Pressure Relaxation -----------------------------------------
+#fix             NPT all npt temp $T $T 0.05 x 0.0 0.0 0.05 couple none tchain 10 #y 0 0 0.5 couple none tchain 10 #dont relax in y
+fix             pressure all press/berendsen x 0.0 0.0 50 couple none #press/berendsen doesn't update trajectories or thermostat
+fix		temp all temp/berendsen $T $T 0.05 #temp/berendsen doesn't update trajectories or barostat
+fix 		NVE all nve #not really nve but need to use this to update trajectories
+run             ${NRUNNPT} 
+unfix           pressure
+unfix		temp
+unfix 		NVE
+write_restart   restart.NPT.300.*
+# -------------- NVE Equilibration ----------------------------------
+fix             NVE all nve #true NVE equilibration again
+dump            snapNVEPxyz all custom ${snapprint} snap.NVE.pressure.lammpstrj id type x y z
+run             ${NRUNNVE}
+unfix           NVE
+write_restart   restart.NVE.pressure.*
+
+write_restart   restart.final.*
+write_data	data.relaxed nocoeff
