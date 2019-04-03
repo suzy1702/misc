@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jul 10 10:39:39 2018
@@ -10,8 +10,7 @@ import numpy as np
 
 infile = 'config.xyz'
 etc = 'strained'
-buff = 0.6
-a = 5.5445
+a = 5.5559
 
 with open(infile, 'r') as fid:
     
@@ -42,10 +41,11 @@ vge = 5.658**3
 asi = vsi/a**2
 age = vge/a**2
 
-si = data[:size/2,:]
-ge = data[size/2:,:]
+xbuff = (asi/2+age/2)/8
+yzbuff = a/8
 
-
+si = data[:size//2,:]
+ge = data[size//2:,:]
 
 si[:,2] = si[:,2]*asi/5.431
 si[:,3] = si[:,3]*a/5.431
@@ -107,9 +107,9 @@ with open(datafile, 'w') as f:
     
     f.write('\n' + str(len(data)) + ' atoms\n')
     f.write('\n' + str(len(masses)) + ' atom types\n')
-    f.write('\n' + str(xmin-buff)+' '+str(xmax+buff)+' xlo'+' xhi\n')
-    f.write(str(ymin-buff)+' '+str(ymax+buff)+' ylo'+' yhi\n')
-    f.write(str(zmin-buff)+' '+str(zmax+buff)+' zlo'+' zhi\n')
+    f.write('\n' + str(xmin-xbuff)+' '+str(xmax+xbuff)+' xlo'+' xhi\n')
+    f.write(str(ymin-yzbuff)+' '+str(ymax+yzbuff)+' ylo'+' yhi\n')
+    f.write(str(zmin-yzbuff)+' '+str(zmax+yzbuff)+' zlo'+' zhi\n')
     f.write('\nMasses\n')
     for i in range(len(masses)):
         f.write('\n' + str(i+1) + ' ' + str(float(masses[i])))
