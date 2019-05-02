@@ -1,0 +1,27 @@
+SiCGe.tersoff-------------------File containing parameters for Tersoff potential between C, Si, Ge atoms
+
+equilibration-------------------Directory containing input script and batch script (module load slurm / batch lammps.run...)
+data.bulk.Si.512.atoms----------Input file containing initial configuration of bulk Si          
+data.bulk.Si.512.atoms.relaxed--Relaxed structure obtained after equilibration to be used for thermal conductivity calculation 
+in.relax.T2000K-----------------Input script for equilibration run with LAMMPS                
+lammps.run.relax.bulk.Si--------Batch script for submitting LAMMPS run in Janus
+
+heat.0--------------------------Directory containing input script and batch script (module load slurm / batch lammps.run...)
+in.kappa.gk.bulk.Si-------------Input script for LAMMPS run to obtain heatflux data   
+lammps.run.gk.bulk.Si-----------Batch script for submitting LAMMPS run in Janus
+
+create.gk.run.dir.sh------------Creates 10 directories with random seed for independent runs  
+allsubmit.sh--------------------Submit batch scripts for all 10 directories           
+
+heatflux_format.f90-------------File to convert LAMMPS heatflux data in the format required by einstein.2D.f90 file
+lammps2dlpCONFIG.f90------------Convert LAMMPS trajectory in the format required by einstein.2D.f90 file
+convert.heatflux.sh-------------Script to perform the above to operations in 10 directories
+
+einstein.2D.f90-----------------File to calculate thermal conductivity from heat flux autocorrelation using Green-Kubo formula
+kappa_calc.pl-------------------Script to perform the above to operations in multiple directories
+
+avg_run.py----------------------Compute average and standard deviations for thermal conductivities(function of correlation time) in multiple directories
+avg_data.py---------------------Compute average and standard deviations for thermal conductivities in multiple directories
+kappa_scale.sh------------------Scales thermal conductivities with respect to a bulk reference
+
+mkinterstitial.py---------------Python script to create .xyz file for bulk configuration with interstitial atoms

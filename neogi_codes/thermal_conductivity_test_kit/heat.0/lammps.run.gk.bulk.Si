@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH --job-name lammps_gk_bulk_Si
+#SBATCH --nodes 5
+#SBATCH --ntasks-per-node 12
+#SBATCH --time 23:00:00
+#SBATCH --output log.lammps
+#SBATCH --mail-type=END
+#SBATCH --mail-user=sane3962@colorado.edu
+# the slurm module provides the srun command
+
+ml --force purge
+ml intel
+ml mkl
+ml impi
+ml slurm
+
+export OMP_NUM_THREADS=1
+#export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/composer_xe_2015.2.164/tbb/lib/intel64
+export LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:${CURC_INTEL_ROOT}/composer_xe_2015.2.164/tbb/lib/intel64/gcc4.4
+cd /lustre/janus_scratch/sane3692
+srun /projects/sane3962/programs/mylammps-19Feb16/src/lmp_intel_cpu -var SEED $RANDOM -var langSEED $RANDOM -in in.kappa.gk.bulk.Si

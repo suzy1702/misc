@@ -1,0 +1,62 @@
+atom_style      atomic
+units           metal
+dimension	3
+boundary 	p p m
+processors      * * 1
+
+read_data	./data.10862.min
+replicate	4 4 1
+
+mass    	1 28.0855  ##Silicon
+pair_style      tersoff
+pair_coeff      * * SiCGe.tersoff Si(D)
+
+variable	T equal 300
+variable        V equal vol
+print           "Volume simulation box = $V A^(3)"
+
+variable        Lx equal xhi-xlo
+variable        Ly equal yhi-ylo
+print           "Lx = ${Lx} A"
+print           "Ly = ${Ly} A"
+variable        Volume equal v_Lx*v_Ly*5.43
+print           "Volume = Lx*Ly*5.43 = ${Volume} A^(3)"
+
+timestep  	0.001     ##0.001 picosecond = 1 femtosecond
+thermo          100
+thermo_style    custom step temp pe etotal press pxx pyy pzz lx ly
+thermo_modify	flush yes
+
+# ----------- Print structure -----------------------
+dump            snap all atom 10000 snap.lammpstrj
+
+# ----------- Relax Structure at 0K -----------------------
+fix		RELAX all box/relax x 0 y 0 couple none
+minimize	0.0 1.0e-8 1000000 10000000
+unfix		RELAX
+
+# ----------- NVT Thermalization ----------------
+velocity        all create $T ${SEED} mom yes rot yes dist gaussian
+fix             NVT all nvt temp $T $T 0.1 tchain 10
+run             100000
+unfix           NVT
+write_restart   restart.*
+
+# ----------- NPT Equilibration and Thermalization ----------------
+dump_modify     snap every 100000
+fix             NPT all npt temp $T $T 0.1 x 0 0 1 y 0 0 1 couple none tchain 10 pchain 10
+run             1000000
+unfix           NPT
+write_restart   restart.*
+
+# ----------- NVE run ----------------------------------
+fix             NVE all nve
+run             100000
+write_restart   restart.*
+undump		snap
+
+## ----------- Print velocity trajectory  ----------------------- ##
+reset_timestep  0
+dump            mydump all custom 25 traj.100ps.25fs id vx vy vz
+run             100000
+
