@@ -11,7 +11,7 @@ import latticeFX as fx
 import matplotlib.pyplot as plt
 import copy as cp
 
-plot = 'no'
+plot = 'yes'
 
 rvec = np.array([[1,0,0],
                  [0,1,0],
@@ -25,44 +25,46 @@ rpos = fx.make_lattice(rvec,n1,n2,n3)
 kpos = fx.make_lattice(kvec,n1,n2,n3)
 
 ##############################################################
-pos = cp.deepcopy(rpos)
-num = len(pos[:,0])
-xmid = np.median(pos[:,0])
-ymid = np.median(pos[:,1])
-zmid = np.median(pos[:,2])
-
-mid = np.intersect1d(np.argwhere(pos[:,0] == xmid),
-                     np.intersect1d(np.argwhere(pos[:,1] == ymid),
-                                    np.argwhere(pos[:,2] == zmid)))
-
-nl = np.zeros(num) #list of neighbor ids
-nd = np.zeros(num) #list of distance to neighbors
-rij = np.zeros((num,3)) #list of vector to neighbors
-
-for i in range(num): #loop over particles
-    rx = xmid-pos[i,0] # vector from partice i to j
-    ry = ymid-pos[i,1] # vector from partice i to j
-    rz = zmid-pos[i,2] # vector from partice i to j
-    dist = np.sqrt(rx**2+ry**2+rz**2)
-    
-    rij[i,0] = -rx
-    rij[i,1] = -ry
-    rij[i,2] = -rz
-    
-    nl[i] = i
-    nd[i] = dist
-    
-nl = nl[np.argsort(nd)]
-rij = rij[np.argsort(nd),:]
-nd = nd[np.argsort(nd)]
-                                    
-## chop off at 3rd NN
-third = np.argwhere(nd > np.unique(nd)[3]).min()
-nl = nl[0:third]
-nd = nd[0:third]
-rij = rij[0:third,:]
-
-rh = rij/2
+# try --- scipy.spatial.Voronoi
+##############################################################
+#pos = cp.deepcopy(rpos)
+#num = len(pos[:,0])
+#xmid = np.median(pos[:,0])
+#ymid = np.median(pos[:,1])
+#zmid = np.median(pos[:,2])
+#
+#mid = np.intersect1d(np.argwhere(pos[:,0] == xmid),
+#                     np.intersect1d(np.argwhere(pos[:,1] == ymid),
+#                                    np.argwhere(pos[:,2] == zmid)))
+#
+#nl = np.zeros(num) #list of neighbor ids
+#nd = np.zeros(num) #list of distance to neighbors
+#rij = np.zeros((num,3)) #list of vector to neighbors
+#
+#for i in range(num): #loop over particles
+#    rx = xmid-pos[i,0] # vector from partice i to j
+#    ry = ymid-pos[i,1] # vector from partice i to j
+#    rz = zmid-pos[i,2] # vector from partice i to j
+#    dist = np.sqrt(rx**2+ry**2+rz**2)
+#    
+#    rij[i,0] = -rx
+#    rij[i,1] = -ry
+#    rij[i,2] = -rz
+#    
+#    nl[i] = i
+#    nd[i] = dist
+#    
+#nl = nl[np.argsort(nd)]
+#rij = rij[np.argsort(nd),:]
+#nd = nd[np.argsort(nd)]
+#                                    
+### chop off at 3rd NN
+#third = np.argwhere(nd > np.unique(nd)[3]).min()
+#nl = nl[0:third]
+#nd = nd[0:third]
+#rij = rij[0:third,:]
+#
+#rh = rij/2
 
 ###################################
 if plot == 'yes':

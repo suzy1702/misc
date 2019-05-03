@@ -7,10 +7,10 @@ processors      * * *
 
 #----------------------- ATOM DEFINITION-----------------------------------
 
-#neighbor 	2 bin
-#neigh_modify 	delay 10
-#neighbor        2.0 nsq
-#neigh_modify 	delay 0 every 1 check yes
+neighbor 	2 bin
+neigh_modify 	delay 10
+neighbor        2.0 nsq
+neigh_modify 	delay 0 every 1 check yes
 
 atom_modify	map hash
 
@@ -18,7 +18,7 @@ read_data	data.si
 variable 	filetowrite string Fij.dat
 
 pair_style 	tersoff
-pair_coeff 	* * SiCGe.tersoff Si(D) Si(D)
+pair_coeff 	* * SiCGe.tersoff Si(D)
 
 timestep 	0.0005 
 
@@ -40,7 +40,7 @@ variable 	N equal "count(all)"
 
 #----------------------------Initialize ------------------------------------------
 
-variable 	du equal 0.025 # Amount of displacement
+variable 	du equal 0.01 # Amount of displacement
 variable 	du2 equal -2*v_du
 
 shell 		rm ${filetowrite}
