@@ -6,6 +6,7 @@ lattice and the Wigner-Seitz cells in both spaces.
 
 rvec
 """
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 import latticeFX as fx
 import matplotlib.pyplot as plt
