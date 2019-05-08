@@ -43,8 +43,9 @@ ax1.set_xlabel('X')
 ax1.set_ylabel('Y')
 #ax1.set_aspect('equal')
 ax1.set_title('Direct Lattice')
-plt.show()
-plt.savefig('directlattice.png',format='png',dpi=300)
+ax1.legend(('Triang.','Ortho'))
+fig1.show()
+fig1.savefig('directlattice.png',format='png',dpi=300)
 
 
 
@@ -57,25 +58,7 @@ ax2.set_xlabel('X')
 ax2.set_ylabel('Y')
 ax2.set_aspect('equal')
 ax2.set_title('Reciprocal Lattice')
-plt.show()
-plt.savefig('reciplattice.png',format='png',dpi=300)
-
-
-
-
-rgb = np.array([1,0,0]).reshape(1,3) 
-#has to be like this or matplotlib bitches
-ax1.scatter(rpos[:,0],rpos[:,1],s=10,c=rgb,edgecolors='k')
-plt.savefig('directlattice.png',format='png',dpi=300)
-
-rgb = np.array([1,0,0]).reshape(1,3) 
-#has to be like this or matplotlib bitches
-ax2.scatter(kpos[:,0],kpos[:,1],s=10,c=rgb,edgecolors='k')
-#    
-
-
-
-
-
-
+ax2.legend(('Triang.','Ortho'))
+fig2.show()
+fig2.savefig('reciplattice.png',format='png',dpi=300)
 
