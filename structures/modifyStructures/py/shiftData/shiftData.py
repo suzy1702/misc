@@ -63,7 +63,7 @@ with open(infile, 'r') as fid:
 ### SHIFT GE ATOMS ###
 data = data[data[:,2].argsort(),:] #sort by x coord
 
-ids = np.argwhere(data[0:(size/3),1] == 2) #Ge atoms in first 3rd of structure
+ids = np.argwhere(data[0:(size//3),1] == 2) #Ge atoms in first 3rd of structure
 cut = data[ids[:,0],:] #Ge atoms
 data = np.delete(data,ids[:,0],axis=0) #cut Ge atoms from structure
 
@@ -73,7 +73,7 @@ nsize = len(data) #size of new array
 dmax = data[nsize-no:nsize,2].mean() #average coord of last monolayer
 
 dist = 0 #avg interlayer distance
-for i in range(nsize/8/no):
+for i in range(nsize//8//no):
     lo1 = nsize-(i+2)*128
     hi1 = nsize-(i+1)*128
     lo2 = nsize-(i+1)*128
@@ -86,7 +86,7 @@ dist = dist/(nsize/8/no) #avg interlayer distance
 del hi1, hi2, lo1, lo2, tmp #clean up variables
 
 if len(cut) > yz*yz/2: #avg of lo coord of ge atoms
-    cmin = cut[0:yz*yz/2,2].mean()
+    cmin = cut[0:yz*yz//2,2].mean()
 else:
     cmin = cut[:,2].mean()
     
