@@ -1,4 +1,4 @@
-# CU_MatSi
+# miscelaneous
 This repository contains codes used in my computational materials science research at the University of Colorado Boulder. The codes are mostly used for solid state heat transfer (phonon) calculations using Molecular Dynamics.
 
 # Content
