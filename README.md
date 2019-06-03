@@ -1,5 +1,5 @@
 # miscelaneous
-This repository contains codes used in my computational materials science research at the University of Colorado Boulder. The codes are mostly used for solid state heat transfer (phonon) calculations using Molecular Dynamics.
+These are just miscelaneous codes that didn't work, were deprecated, or didn't fit into another repository.
 
 # Content
 I will add details of the files contained here later on. For now, just ask me if you wanna know...
