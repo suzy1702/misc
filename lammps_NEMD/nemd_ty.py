@@ -69,8 +69,6 @@ class nemd_data:
       Find the stationary state region of the heatflux. Follow the prompts and
       pick the flat region!
       """
-      print('\n\tPick the bounds of the heatflux data to compute transport '
-            'from: (i.e. pick the flat region)')
       fig1, ax1 = plt.subplots()
       ax1.plot(self.hflux['steps'],self.hflux['flux'][:,0],'r',
                self.hflux['steps'],abs(self.hflux['flux'][:,1]),'b')
@@ -80,9 +78,14 @@ class nemd_data:
       plt.show()
       
       # get the input
-      lowerstep = float(input('\tEnter the begenning of the bounds '
-                              '(i.e. the step):\t'))
-      upperstep = float(input('\tEnter the end of the bounds:\t'))
+      bounds = input('\n\tPick the bounds of the heatflux data to '
+          'compute transport from, i.e. pick the flat region.\n\tEnter the '
+          'begenning and end of the bounds (i.e. the steps)\n\tUSAGE: 2 floats '
+          'seperated by a space:\n\t').strip().split()
+      if len(bounds) != 2:
+          sys.exit('\tERROR: Bounds must be entered as 2 floats seperated by a space')
+      lowerstep = float(bounds[0])
+      upperstep = float(bounds[1])
 
       # make sure input is within the bounds of the actual data
       if upperstep <= lowerstep:
@@ -103,8 +106,8 @@ class nemd_data:
       t_ubound = max(np.argwhere(self.temp['steps'] <= upperstep))[0]
 
       # number of blocks determined by number of times temp is printed
-      self.numavg = int(input('\tEnter the number of blocks to average '
-                              '(must be between 1 and {}):\t'.
+      self.numavg = int(input('\n\tEnter the number of blocks to average '
+                              '(must be between 1 and {}):\n\t'.
                               format(t_ubound-t_lbound)))
       
       # trim the data and overwrite it
@@ -151,6 +154,7 @@ class nemd_data:
          'right, and the rightmost point on the right\n\tUSAGE: enter 5 '
          'integers seperated by spaces (note that numbering starts at 1):\n\t').
          strip().split()).astype(int)-1
+      print('\n')
       
       if len(self.grad_points) != 5:
          sys.exit('\tERROR: there must be exactly 5 boundary points for '
@@ -199,6 +203,8 @@ class nemd_data:
          fits['deltaT'][i] = np.polyval(fits['lslope'][i],
              coords[pts[0]:pts[2]])[-1]-np.polyval(fits['rslope'][i],
                    coords[pts[2]:pts[4]])[0]
+
+         print('\tFit {}: deltaT = {} K'.format((i+1),fits['deltaT'][i]))
       
          if i > (nplots//2-1):
             x = i-nplots//2; y = 1
@@ -207,10 +213,13 @@ class nemd_data:
             
          t_ax[x,y].errorbar(coords[:-1],bins['avg'][i,:-1],
              xerr=None,yerr=bins['std'][i,:-1],color='k',marker='o',markersize=2) 
+         # plot the temperature bin points and error bars for each block.
          t_ax[x,y].plot(coords[pts[0]:pts[2]],np.polyval(fits['lslope'][i],
                coords[pts[0]:pts[2]]),'r',
                coords[pts[2]:pts[4]],np.polyval(fits['rslope'][i],
                coords[pts[2]:pts[4]]),'r',zorder=100)
+         # plot the linear fit extrapolated to the interface for each block.
+         # format the plots.
          t_ax[x,y].set_title('fit no. {}'.format(i+1))
          t_ax[x,0].set_ylabel('Temp, (K)')
          t_ax[-1,y].set_xlabel('Coord, (Angstrom)')
@@ -362,9 +371,9 @@ g_std = np.sqrt((sumoferror_of_sumofsquares_g+
 
 # the calculation is over, just write the data!
 # print the results to the screen and to a text file
-print('Left Side: {} +/- {} (W/m/K)'.format(kappa_l,kappa_l_std))
-print('Right Side: {} +/- {} (W/m/K)'.format(kappa_r,kappa_r_std))
-print('Interface: {} +/- {} (W/m/m/K)'.format(g,g_std))
+print('\n\t! Left Side: {} +/- {} (W/m/K)'.format(kappa_l,kappa_l_std))
+print('\t! Right Side: {} +/- {} (W/m/K)'.format(kappa_r,kappa_r_std))
+print('\t! Interface: {} +/- {} (W/m/m/K)'.format(g,g_std))
 
 with open('thermal_prop.txt','w') as fid:
    fid.write('Thermal conductivity in the left and right sides of a heterostructure '
