@@ -28,9 +28,9 @@ class grid:
       self.angular = wf.wave_func['Angular']
       self.radial = wf.wave_func['Radial']
       
-   def wave_func(self,plane='xz'):
+   def density(self,plane='xz'):
       """
-      Enter the plane to compute angular wavefunction in
+      Enter the plane to compute angular density from
       
       Acceptable usage is 'xz', 'zx', 'xy', or 'yx',
       'XZ', 'ZX', 'XY', or 'YX'
@@ -58,8 +58,8 @@ class grid:
       rgrid = rgrid.astype(int) # indicies for radial part of wavefunction
       # mask radius beyond rad of wavefunction
       mask = (rgrid <= nr-1).astype(int) # beyond radius of wave function
-      rwf = rgrid*mask # set values beyond to 0
-      rwf = big_r[rwf]*mask # 0's are now the value of big_r[0], so set to 0 again   
+      rdens = rgrid*mask # set values beyond to 0
+      rdens = big_r[rdens]*mask # 0's are now the value of big_r[0], so set to 0 again   
       
       # phi component of spherical harmonic
       phigrid = np.arctan2(self.grids['ygrid'],self.grids['xgrid']) # x-y plane, i.e. theta = 0
@@ -75,13 +75,12 @@ class grid:
       self.grids['phigrid'] = phigrid
       self.grids['thetagrid'] = thetagrid
       
-      self.wavefunc = {'radial wavefunction':rwf}
+      self.dens = {'radial dens':rdens}
       if plane == 'xz':
-         self.wavefunc['angular wavefunction'] = spharm[thetagrid,0]
+         self.dens['angular dens'] = spharm[thetagrid,0]
       else:
-         self.wavefunc['angular wavefunction'] = spharm[0,phigrid]
-      self.wavefunc['total wavefunction'] = (self.wavefunc['radial wavefunction']*
-                   self.wavefunc['angular wavefunction'])
+         self.dens['angular dens'] = spharm[0,phigrid]
+      self.dens['total dens'] = self.dens['radial dens']*self.dens['angular dens']
       
          
       

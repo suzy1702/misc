@@ -2,22 +2,18 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Jun 12 18:30:23 2019
-
 @author: ty
 """
-
 import numpy as np
 from math import factorial as fact
 from scipy.special import binom
 import sys
-
 
 class atomic_orbital:
    """
    Given 3 quantum numbers, radial and angular grid size, build Hydrogren
    atom atomic wavefunctions.
    """
-   
    def __init__(self,n,l,m):
       """
       Error check the quantum number input and save the values.
@@ -26,21 +22,13 @@ class atomic_orbital:
          sys.exit('\tUSAGE ERROR: all quantum numbers must be integers!')
       if n <= 0:
          sys.exit('USAGE ERROR: principal quantum number n must be n >= 1!')
-
-     # if l > 4:
-     #    sys.exit('\tERROR: sorry, only angular momentum number l <= 4 is currently '
-     #             'supported!')
-
       if l < 0 or l > n-1:
          sys.exit('\tUSAGE ERROR: angular momentum number l must but 0 <= l <= n-1!')
       if m < -l or m > l:
          sys.exit('USAGE ERROR: magnetic quantum number m must be -l <= m <= l!')
-
          
       self.q_num = {'n':n,'l':l,'m':m}
       self.wave_func = {'Radial':{},'Angular':{}}
-      
-      
       
    def radial(self,dr=0.001,rmax=10,units='Bohr'):
       """
@@ -54,7 +42,6 @@ class atomic_orbital:
          - x = r.sin(theta).cos(phi)
          - y = r.sin(theta).sin(phi)
          - z = r.cos(theta)
-      
       """
       n = self.q_num['n']
       l = self.q_num['l']
@@ -80,7 +67,7 @@ class atomic_orbital:
       p = n-l-1
       j = 2*l+1
       for q in range(p+1):
-         lpoly[:] = lpoly[:]+binom(p+j,p-q) * (-1)**q * (2*r/n/a_0)**q/fact(q)
+         lpoly[:] = lpoly[:]+binom(p+j,p-q)*(-1)**q*(2*r/n/a_0)**q/fact(q)
             
       # David Miller, Quantum Mechanics, eq. (10.72)
       big_r = np.zeros(nr)
@@ -89,8 +76,7 @@ class atomic_orbital:
       big_r = norm*(2*r/n/a_0)**l*lpoly*np.exp(-r/n/a_0)
       
       self.wave_func['Radial'] = {'R(r)':big_r,'r':r,'Units':units}
-      
-      
+      self.lpoly = lpoly
       
    def angular(self,dtheta=0.001,dphi=0.001):
       """
@@ -98,7 +84,7 @@ class atomic_orbital:
       
       Default step size for azimuthal and polar grid is 0.001 
       
-      phi E [-pi,pi), theta E [-pi/2,pi/2)
+      phi E [0,2*pi), theta E [0,pi)
             
       Note that the Spherical harmonic function is given as a complex NxM 
       matrix where the N rows are the theta values and the M columns are the
@@ -108,16 +94,15 @@ class atomic_orbital:
          - x = r.sin(theta).cos(phi)
          - y = r.sin(theta).sin(phi)
          - z = r.cos(theta)
-         
       """
       l = self.q_num['l']
       m = self.q_num['m']
       
       # azimuthal angle grid (between r and positive x-axis)
-      phi = np.arange(-np.pi,np.pi,dphi)
+      phi = np.arange(0,2*np.pi,dphi)
       nphi = len(phi)
       # polar angle grid (between r and positive z-axis)
-      theta = np.arange(-np.pi/2,np.pi/2,dtheta)
+      theta = np.arange(0,np.pi,dtheta)
       ntheta = len(theta)
       
       # David Miller, Quantum Mechanics, eq. (9.31)
@@ -134,12 +119,11 @@ class atomic_orbital:
       
       # David Miller, Quantum Mechanics, eq. (9.34)
       # here in the normalization part, l and m have usual rules.
-      sp_harm = np.zeros((ntheta,nphi)).astype(complex)
-      norm = (-1)**m*np.sqrt((2*l+1)/(4*np.pi)*fact(l-m)/fact(l+m))
-      # normalization coefficient
-      for i in range(ntheta):
-         sp_harm[i,:] = norm*lfunc[i]*np.exp(1j*m*phi)
-
+      norm = (-1)**m*np.sqrt((2*l+1)/(4*np.pi)*fact(l-abs(m))/fact(l+abs(m))) 
+      spharm = np.array([lfunc]*nphi).T
+      spharm = spharm*np.exp(1j*m*np.array([phi]*ntheta))*norm
       # theta == rows, phi == columns
-      self.wave_func['Angular'] = {'Spherical Harmonics':sp_harm,
-                    'theta':theta,'phi':phi}
+      self.wave_func['Angular'] = {'Spherical Harmonics':spharm,
+                    'theta':theta,'phi':phi,'cos(theta)':x}
+      
+      
