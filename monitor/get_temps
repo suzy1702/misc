@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# TIMELAG is the time step between writing cpu temps to the file. 
+# units are in SECONDS. It must be an integer.
+
+rm results.txt
+
+TIMELAG=60
+
+echo "$TIMELAG" >> results.txt
+echo >> results.txt
+
+watch -n $TIMELAG ./scripts/monitor.sh && cp results.txt ./scripts && python ./scripts/show_max_temps.py && rm ./scripts/results.txt
