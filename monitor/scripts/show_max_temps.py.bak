@@ -61,17 +61,12 @@ with open('results.txt','r') as fid:
                         
 results = proc_data(temps,cores,maxtemps,critical,dt) # save to class just cause
 fig, ax = plt.subplots() # plot the temps
-
-nsteps = len(results.data['Temperature'][0,:])
-steps = np.arange(1,nsteps+1,1)
-for i in range(nprocs):
-      d = (i+1)/nprocs
-      ax.plot(steps,temps[i,:],c=[0.0,0.0,0.0+d],label=None)
-#      ax.scatter(cores,temps[:,i],c=[[0.0,0.0,0.0+d]],label=None)
-      
-ax.plot(steps,np.ones(nsteps)*maxtemps[0],'r',label='Max design temp')
-ax.plot(steps,np.ones(nsteps)*critical[0],'k',label='Critical design temp')
-ax.axis((1,nsteps,temps.min()-5,critical.max()+5))
+for i in range(blocks):
+      d = (i+1)/blocks
+      ax.scatter(cores,temps[:,i],c=[[0.0,0.0,0.0+d]],label=None)
+ax.plot(cores,np.ones(nprocs)*maxtemps,'r',label='Max design temp')
+ax.plot(cores,np.ones(nprocs)*critical,'k',label='Critical design temp')
+ax.axis((-0.5,nprocs-0.5,temps.min()-5,critical.max()+5))
 fig.legend()
 ax.set_ylabel('Temperature (\'C)')
 ax.set_xlabel('Cores')
