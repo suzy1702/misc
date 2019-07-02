@@ -23,11 +23,12 @@ infile = 'C_mp-667273_conventional_standard.cif'
 outfile = 'c60'
 
 c60 = loadStructure(infile)
-#c60_2x2x2 = supercell(c60,[2,2,2])
+c60_2x2x2 = supercell(c60,[12,2,2])
 c60.write(outfile+'.xyz','xyz')
-#c60_2x2x2.write(outfile+'_2x2x2.xyz','xyz')
+c60_2x2x2.write(outfile+'_2x2x2.xyz','xyz')
 
-with open(outfile+'.xyz','r') as fid:
+struct = c60_2x2x2
+with open(outfile+'_2x2x2.xyz','r') as fid:
       nat = int(fid.readline()) # number of atoms
       fid.readline() # skip comment line
       
@@ -42,11 +43,12 @@ with open(outfile+'.xyz','r') as fid:
                   pos[i,0] = types.index(tmp[0])+1
                   
             pos[i,1:4] = tmp[1:4]
-            
+
+nat = len(pos[:,0])
 masses = ['']*len(types)
 masses[0] = 12.0107
-cell = np.array([c60.lattice.a,c60.lattice.b,c60.lattice.c])
-angles = np.array([c60.lattice.alpha,c60.lattice.beta,c60.lattice.gamma])
+cell = np.array([struct.lattice.a,struct.lattice.b,struct.lattice.c])
+angles = np.array([struct.lattice.alpha,struct.lattice.beta,struct.lattice.gamma])
 with open('data.'+outfile,'w') as fid:
       fid.write('LAMMPS input file\n')
       fid.write('\n{} atoms\n'.format(nat))
