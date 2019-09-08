@@ -1,0 +1,63 @@
+#!/usr/bin/env python3
+
+# python modules
+import sys
+import os
+import numpy as np
+import h5py
+
+# add my modules to path
+modulepath = './modules'
+sys.path.append(modulepath)
+
+# data structures
+import Params
+import Data
+
+# subroutines
+import Compressor
+import Phonons
+import FileIO
+import Plot
+
+### Get the input file
+if len(sys.argv) == 1:
+    input_file = 'INPUT'
+elif len(sys.argv) > 2:
+    print('\nERROR: ./GF takes 1 or 0 arguments!'
+            '\nTry \'./GF help\' for more info.\n')
+    exit()  
+elif len(sys.argv) == 2 and (sys.argv[1] == 'h' or sys.argv[1] == 'help' or 
+        sys.argv[1] == 'HELP' or sys.argv[1] == '-h' or sys.argv[1] == '--help' or 
+        sys.argv[1] == '--HELP'):
+    print('\nUSAGE: ./GF [input_file]\n\n\'input_file\' should be the name of the file '
+        'containing the parameters \nto calculate the phonon spectral energy density'
+        '\n\nIf no input_file name is given, the default is \'INPUT\'\n')
+    exit()
+else: 
+    input_file = str(sys.argv[1])
+if not os.path.exists(input_file):
+    print('\nERROR: file \'{}\' not found!\n'.format(input_file))
+    exit()
+
+params = Params.params(input_file)
+params.simulation()
+params.lattice()
+
+if params.compress:
+    Compressor.compress(params)
+    print('\nALL DONE!\n')
+    exit()
+if params.plot:
+    Plot.plot_bands(params)
+    exit()
+
+data = Data.data(params)
+data.structures(params)
+
+phonons = Phonons.phonons()
+phonons.compute_greens_functions(params,data)
+
+FileIO.write_output(params,data)
+
+print('\nALL DONE!\n')

@@ -1,0 +1,27 @@
+### Input file
+# options
+PLOT     = 1
+DEBUG    = 0
+COMPRESS = 0
+
+# simulation parameters
+TEMPERATURE   = 300
+TIME_STEP     = 0.75    # femtoseconds
+NUM_STEPS     = 1048576 
+STRIDE        = 32      
+NUM_ENSEMBLES = 4
+
+# crystal structure
+LAT_PARAMS = 5.431 5.431 5.431 # Angstrom
+PRIM_VECS  = 1.0 0.0 0.0  0.0 1.0 0.0  0.0 0.0 1.0
+
+# qpoints
+NUM_QPOINTS = 5
+QPOINTS     = 0.0 0.0 0.0  0.125 0.0 0.0  0.25 0.0 0.0  0.375 0.0 0.0  0.5 0.0 0.0  
+
+# filenames
+OUT_PREFIX   = 'gf_phonons'
+LATTICE_FILE = 'lattice.dat' 
+POS_FILE     = 'pos.dat'
+FILE_FORMAT  = 'lammps'
+
